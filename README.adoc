@@ -1,0 +1,10 @@
+= gpumanagerd
+
+== Building
+
+=== Fedora
+
+....
+$ sudo dnf --assumeyes install systemd-devel
+$ cargo build
+....
