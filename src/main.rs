@@ -1,23 +1,19 @@
-extern crate udev;
+extern crate dbus;
 
-use std::io;
+mod devicereader;
+use devicereader::list_devices;
 
-fn main() -> io::Result<()>  {
-    let mut enumerator = udev::Enumerator::new()?;
+mod daemon;
+use daemon::Daemon;
 
-    enumerator.match_subsystem("pci")?;
-    enumerator.match_property("ID_PCI_CLASS_FROM_DATABASE", "Display controller")?;
+use std::sync::Arc;
+use dbus::blocking::LocalConnection;
+use dbus::tree::Factory;
+use std::error::Error;
+use std::time::Duration;
+use dbus::Path;
 
-    for device in enumerator.scan_devices()? {
-        println!();
-        println!("  [properties]");
-        for property in device.properties() {
-            println!("    - {:?} {:?}", property.name(), property.value());
-        }
-        println!("  [attributes]");
-        for attribute in device.attributes() {
-            println!("    - {:?} {:?}", attribute.name(), attribute.value());
-        }
-    }
-    Ok(())
+fn main() -> () {
+    let daemon = Daemon::new("org.freedesktop.gpumanager");
+    daemon.start()
 }
