@@ -9,6 +9,8 @@ use dbus::message::Message;
 use dbus::tree::{MethodInfo, MethodResult, Signal};
 
 use crate::devicereader::list_devices;
+use std::collections::hash_map::RandomState;
+use std::collections::HashMap;
 
 pub struct Daemon {
     name: String,
@@ -32,8 +34,7 @@ impl Daemon {
                 f.method("ListDevices", (), move |m| {
 
                     let name: &str = m.msg.read1()?;
-                    let s = format!("Hello {:?}!", list_devices());
-                    let mret = m.msg.method_return().append1(s);
+                    let mret = m.msg.method_return().append1(list_devices());
 
                     let sig = signal.msg(m.path.get_name(), m.iface.get_name())
                         .append1(&*name);

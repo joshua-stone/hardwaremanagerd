@@ -8,6 +8,7 @@ edition = "2018"
 
 [dependencies]
 udev = "0.4"
+dbus = "0.8.2"
 
 [profile.release]
 lto = true
