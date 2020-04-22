@@ -18,14 +18,14 @@ context = Context()
 pci = LibPCI()
 
 for device in context.list_devices(subsystem='pci',ID_PCI_CLASS_FROM_DATABASE='Display controller'):
-    vendor_id, device_id = [int(i, 16) for i in device.properties['PCI_ID'].split(':')]
+    vendor_id,    device_id    = [int(i, 16) for i in device.properties['PCI_ID'].split(':')]
     subvendor_id, subdevice_id = [int(i, 16) for i in device.properties['PCI_SUBSYS_ID'].split(':')]
 
     model = pci.lookup_subsystem_device_name(vendor_id=vendor_id, device_id=device_id, 
-                                             subvendor_id=subvendor_id, subdevice_id=subvendor_id)
+                                             subvendor_id=subvendor_id, subdevice_id=subdevice_id)
 
     model_reverse = pci.lookup_subsystem_device_name(vendor_id=subvendor_id, device_id=subdevice_id,
-                                                     subvendor_id=vendor_id, subdevice_id=vendor_id)
+                                                     subvendor_id=vendor_id, subdevice_id=device_id)
 
     print('Normal order lookup:')
     print(model)
