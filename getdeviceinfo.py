@@ -4,10 +4,11 @@
 
 # Example output:
 # $ ./getdeviceinfo.py
+# Device #0
 # Normal order lookup:
-# Ellesmere [Radeon RX 470/480/570/570X/580/580X/590]
+# 1002:67df	1682:c580	Ellesmere [Radeon RX 470/480/570/570X/580/580X/590]
 # Reverse order lookup:
-# Radeon RX 580
+# 1682:c580	1002:67df	Radeon RX 580
 
 # pip3 install --user pyudev libpci
 
