@@ -29,11 +29,11 @@ pub fn get_memory_info() -> Vec<HashMap<String, String, RandomState>> {
             let key: String = temp.first().unwrap().chars().skip(1).collect();
             let value: String = temp.last().unwrap().chars().skip(1).collect();
             mem_device.insert(key, value);
-        } else if !mem_device.is_empty() {
-            mem_info.push(mem_device.clone());
-            mem_device.clear();
         } else {
-            continue;
+            if !mem_device.is_empty() {
+                mem_info.push(mem_device.clone());
+                mem_device.clear();
+            }
         }
     }
     mem_info.push(mem_device);
