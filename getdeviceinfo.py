@@ -17,7 +17,7 @@ from libpci import LibPCI
 context = Context()
 pci = LibPCI()
 
-for device in context.list_devices(subsystem='pci',ID_PCI_CLASS_FROM_DATABASE='Display controller'):
+for number, device in enumerate(context.list_devices(subsystem='pci',ID_PCI_CLASS_FROM_DATABASE='Display controller')):
     vendor_id,    device_id    = [int(i, 16) for i in device.properties['PCI_ID'].split(':')]
     subvendor_id, subdevice_id = [int(i, 16) for i in device.properties['PCI_SUBSYS_ID'].split(':')]
 
@@ -27,9 +27,11 @@ for device in context.list_devices(subsystem='pci',ID_PCI_CLASS_FROM_DATABASE='D
     model_reverse = pci.lookup_subsystem_device_name(vendor_id=subvendor_id, device_id=subdevice_id,
                                                      subvendor_id=vendor_id, subdevice_id=device_id)
 
+    print(f'Device #{number}')
     print('Normal order lookup:')
-    print(model)
+    print(f'{vendor_id:02x}:{device_id:02x}\t{subvendor_id:02x}:{subdevice_id:02x}\t{model}')
     # Since some devices have a backwards lookup order, so print both versions to cover edge cases
     print('Reverse order lookup:')
-    print(model_reverse)
+    print(f'{subvendor_id:02x}:{subdevice_id:02x}\t{vendor_id:02x}:{device_id:02x}\t{model_reverse}')
+    print()
 
