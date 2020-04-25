@@ -39,13 +39,13 @@ for number, device in enumerate(context.list_devices(subsystem='pci',ID_PCI_CLAS
     print(f'Device #{number}')
     print('Normal order lookup:')
     print(f'[{vendor_id:02x}:{device_id:02x} {subvendor_id:02x}:{subdevice_id:02x}]')
-    print(f'vendor={vendor}')
-    print(f'model={model}')
+    print(f'vendor = {vendor}')
+    print(f'model = {model}')
     print()
     # Some devices have a backwards lookup order, so print both versions to cover edge cases
     print('Reverse order lookup:')
     print(f'[{vendor_id:02x}:{device_id:02x} {subvendor_id:02x}:{subdevice_id:02x}]')
-    print(f'vendor={vendor_reverse}')
-    print(f'model={model_reverse}')
+    print(f'vendor = {vendor_reverse}')
+    print(f'model = {model_reverse}')
     print()
 
