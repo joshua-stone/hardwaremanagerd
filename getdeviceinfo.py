@@ -10,13 +10,13 @@
 # Device #0
 # Normal order lookup:
 # [1002:67df 1682:c580]
-# vendor=Advanced Micro Devices, Inc. [AMD/ATI]
-# model=Ellesmere [Radeon RX 470/480/570/570X/580/580X/590]
+# vendor = Advanced Micro Devices, Inc. [AMD/ATI]
+# model = Ellesmere [Radeon RX 470/480/570/570X/580/580X/590]
 #
 # Reverse order lookup:
 # [1002:67df 1682:c580]
-# vendor=XFX Pine Group Inc.
-# model=Radeon RX 580
+# vendor = XFX Pine Group Inc.
+# model = Radeon RX 580
 
 from pyudev import Context
 from libpci import LibPCI
