@@ -4,7 +4,6 @@ use std::collections::HashMap;
 use smbios::Structure;
 use smbios::stream;
 
-// First value
 const MEM_TYPES: [&str; 29] = [
     "Other",
     "Unknown",
@@ -68,13 +67,10 @@ pub fn create_mem(data: &Structure) -> HashMap<String, String> {
 }
 
 pub fn get_mem_info() -> Vec<HashMap<String, String>> {
-    let DMI  = stream()
-        .unwrap();
-    let _dmi: Vec<Structure> = DMI.1;
-    let dmi: Vec<HashMap<String, String>> = _dmi
-        .iter().filter(|i| i.header.header_type == 17)
+    let dmi: Vec<Structure> = stream().unwrap().1;
 
+    dmi.iter()
+        .filter(|i| i.header.header_type == 17)
         .map(create_mem)
-        .collect();
-    dmi
+        .collect()
 }

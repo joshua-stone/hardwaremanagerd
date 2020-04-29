@@ -5,6 +5,6 @@
 === Fedora
 
 ....
-$ sudo dnf --assumeyes install systemd-devel
+$ sudo dnf --assumeyes install gcc dbus-devel systemd-devel
 $ cargo build
 ....

@@ -1,6 +1,10 @@
 extern crate dbus;
+#[path = "memory.rs"] mod memory;
+#[path = "devicereader.rs"] mod devicereader;
 
-use crate::devicereader::{get_memory_info, list_devices};
+use memory::get_mem_info;
+use devicereader::list_devices;
+
 
 use dbus::blocking::LocalConnection;
 use dbus::tree::Tree;
@@ -14,6 +18,7 @@ pub struct Daemon {
     interval: u64,
     tree: Tree<MTFn, ()>,
 }
+
 impl Daemon {
     pub fn new(name: &str) -> Daemon {
         let connection = LocalConnection::new_session().unwrap();
@@ -52,7 +57,7 @@ impl Daemon {
                         .add_m(
                             f.method("ListModules", (), move |m| {
                                 let name: &str = m.msg.read1()?;
-                                let mret = m.msg.method_return().append1(get_memory_info());
+                                let mret = m.msg.method_return().append1(get_mem_info());
 
                                 let sig = signal3
                                     .msg(m.path.get_name(), m.iface.get_name())
