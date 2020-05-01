@@ -1,48 +1,41 @@
 use std::fs::read_to_string;
 use std::collections::HashMap;
-use std::path::Path;
+use glob::glob;
+use std::path::PathBuf;
 
-pub fn list_cores() -> Vec<HashMap<String, String>> {
-    let mut enumerator = udev::Enumerator::new().unwrap();
+pub fn detect_core_count() -> Vec<PathBuf>  {
+    glob("/sys/devices/system/cpu/cpu[0-9]*").unwrap().map(|r| r.unwrap()).collect()
+}
 
-    enumerator.match_subsystem("cpu").unwrap();
-
+pub fn list_core_frequencies(cpu_cores: Vec<PathBuf>) -> Vec<HashMap<String, String>> {
     let mut cores: Vec<HashMap<String, String>> = Vec::new();
     let mut properties: HashMap<String, String> = HashMap::new();
-    for device in enumerator.scan_devices().unwrap() {
-        for property in device.properties() {
-            if property.name().to_os_string().into_string().unwrap() == "DEVPATH" {
-                let cpu_path: String = "/sys".to_owned() + property.value().to_str().unwrap();
-                let path = Path::new(&cpu_path);
-                let cpu_core = path.file_name().unwrap().to_str().unwrap()[3..].to_string();
-                let cpufreq = path.join("cpufreq");
-                for entry in cpufreq.read_dir().expect("read_dir call failed") {
-                    if let Ok(entry) = entry {
-                        let fpath = entry.path();
-                        if fpath.is_file() {
-                            let result = read_to_string(&fpath);
 
-                            if let Ok(mut result) = result {
-                                if result.ends_with("\n") {
-                                    result.pop();
-                                }
-                                if result.ends_with(" ") {
-                                    result.pop();
-                                }
-                                properties.insert(
-                                    fpath.file_name().unwrap().to_str().unwrap().to_string(),
-                                    result,
-                                );
-                            }
+    for core in cpu_cores {
+        let cpufreq = core.join("cpufreq");
+        for entry in cpufreq.read_dir().expect("directory failed to open") {
+            if let Ok(entry) = entry {
+                let fpath = entry.path();
+                if fpath.is_file() {
+                    let result = read_to_string(&fpath);
+
+                    if let Ok(mut result) = result {
+                        if result.ends_with("\n") {
+                            result.pop();
                         }
+                        if result.ends_with(" ") {
+                            result.pop();
+                        }
+                        properties.insert(
+                            fpath.file_name().unwrap().to_str().unwrap().to_string(),
+                            result,
+                        );
                     }
-
                 }
-                properties.insert("core".to_owned(), cpu_core);
             }
+            cores.push(properties.clone());
+            properties.clear();
         }
-        cores.push(properties.clone());
-        properties.clear();
     }
     cores
 }

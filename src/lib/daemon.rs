@@ -5,7 +5,8 @@ extern crate dbus;
 
 use memory::get_mem_info;
 use devicereader::list_devices;
-use cpu::list_cores;
+use cpu::list_core_frequencies;
+use cpu::detect_core_count;
 
 use dbus::blocking::LocalConnection;
 use dbus::tree::Tree;
@@ -22,6 +23,7 @@ pub struct Daemon {
 
 impl Daemon {
     pub fn new(name: &str) -> Daemon {
+        let cpu_cores = detect_core_count();
         let connection = LocalConnection::new_session().unwrap();
         connection.request_name(name, false, true, false).unwrap();
         let f: Factory<MTFn, ()> = Factory::new_fn::<()>();
@@ -82,7 +84,7 @@ impl Daemon {
                         .add_m(
                             f.method("ListFrequencies", (), move |m| {
                                 let name: &str = m.msg.read1()?;
-                                let mret = m.msg.method_return().append1(list_cores());
+                                let mret = m.msg.method_return().append1(list_core_frequencies(cpu_cores.clone()));
 
                                 let sig = signal5
                                     .msg(m.path.get_name(), m.iface.get_name())
