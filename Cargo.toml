@@ -9,7 +9,7 @@ edition = "2018"
 [dependencies]
 udev = "0.4"
 dbus = "0.8.2"
-libc = "0.2.69"
+smbios = "0.1.7"
 
 [profile.release]
 lto = true
