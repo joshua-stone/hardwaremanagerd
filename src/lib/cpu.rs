@@ -2,9 +2,34 @@ use std::fs::read_to_string;
 use std::collections::HashMap;
 use glob::glob;
 use std::path::PathBuf;
+use std::fs::File;
+use std::io::{Result, Write};
+
+pub struct Cpu {
+    pub cores: Vec<PathBuf>
+}
+
+pub fn write_to_core(core: &PathBuf, value: &str) -> Result<()> {
+    let mut outfile = File::create(core)?;
+    outfile.write_all(value.as_bytes())
+
+}
 
 pub fn detect_core_count() -> Vec<PathBuf>  {
     glob("/sys/devices/system/cpu/cpu[0-9]*").unwrap().map(|r| r.unwrap()).collect()
+}
+
+impl Cpu {
+    pub fn new() -> Cpu {
+        Cpu {
+            cores: detect_core_count()
+        }
+    }
+}
+
+pub fn disable_core(cpu: Cpu, core: i32) -> bool {
+    let file = cpu.cores.get(core as usize).expect("Not a valid core");
+    write_to_core(file, "0").is_ok()
 }
 
 pub fn list_core_frequencies(cpu_cores: Vec<PathBuf>) -> Vec<HashMap<String, String>> {
