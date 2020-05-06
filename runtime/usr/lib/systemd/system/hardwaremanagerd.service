@@ -1,0 +1,8 @@
+[Unit]
+Description=Hardware Manager service
+
+[Service]
+BusName=org.freedesktop.HardwareManager
+ExecStart=/usr/sbin/hardwaremanagerd
+Type=dbus
+IOSchedulingClass=idle
