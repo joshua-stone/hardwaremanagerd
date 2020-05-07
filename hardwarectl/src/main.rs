@@ -3,6 +3,7 @@ use clap::App;
 use dbus::blocking::Connection;
 use std::time::Duration;
 use std::collections::HashMap;
+use std::ops::Div;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     App::new("hwctl")
@@ -13,30 +14,40 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let conn = Connection::new_session()?;
 
-    let proxy = conn.with_proxy("org.freedesktop.HardwareManager", "/gpu", Duration::from_millis(5000));
+    let mut proxy = conn.with_proxy("org.freedesktop.HardwareManager", "/gpu", Duration::from_millis(5000));
 
     let (gpus,): (Vec<HashMap<String, String>>,) = proxy.method_call("org.freedesktop.HardwareManager", "ListDevices", ("",))?;
-    let proxy = conn.with_proxy("org.freedesktop.HardwareManager", "/cpu", Duration::from_millis(5000));
+    proxy = conn.with_proxy("org.freedesktop.HardwareManager", "/cpu", Duration::from_millis(5000));
     let (cpus,): (Vec<HashMap<String, String>>,) = proxy.method_call("org.freedesktop.HardwareManager", "ListFrequencies", ("",))?;
 
-    for name in gpus {
-        let model = &name["ID_MODEL_FROM_DATABASE"];
-        let vendor = &name["ID_VENDOR_FROM_DATABASE"];
-        let driver = &name["DRIVER"];
-        let pci_id = &name["PCI_ID"];
+    proxy = conn.with_proxy("org.freedesktop.HardwareManager", "/ram", Duration::from_millis(5000));
+    let (ram,): (Vec<HashMap<String, String>>,) = proxy.method_call("org.freedesktop.HardwareManager", "ListModules", ("",))?;
 
-        println!("{}", model);
-        println!("\tModel:  {}", vendor);
-        println!("\tDriver: {}", driver);
-        println!("\tPCI ID: {}", pci_id);
+    for (number, values) in gpus.iter().enumerate() {
+        println!("GPU #{}", number);
+        println!("\tModel: {} {}", &values["ID_VENDOR_FROM_DATABASE"], &values["ID_MODEL_FROM_DATABASE"]);
+        println!("\tDriver: {}", &values["DRIVER"]);
+        println!("\tPCI ID: {}", &values["PCI_ID"]);
     }
 
-    for (core, values) in cpus.iter().enumerate() {
-        let current_frequency = &values["scaling_cur_freq"];
-        let governor = &values["scaling_governor"];
-        println!("CPU #{}", core);
-        println!("\tFrequency: {}", current_frequency);
-        println!("\tGovernor:  {}", governor);
+    for (number, values) in cpus.iter().enumerate() {
+        println!("CPU #{}", number);
+        println!("\tFrequency: {:.2} GHz", values["scaling_cur_freq"].parse::<f32>().unwrap() * 0.000001);
+        println!("\tGovernor:  {}",        values["scaling_governor"]);
+    }
+
+    for (number, values) in ram.iter().enumerate() {
+        println!("RAM #{}", number);
+
+        if values["speed"].eq("0") {
+            println!("\t<EMPTY>");
+            continue
+        } else {
+            println!("\tModel:   {} {}",   &values["manufacturer"], &values["model"]);
+            println!("\tSize:    {} MB",   &values["size"]);
+            println!("\tSpeed:   {} MT/s", &values["speed"]);
+            println!("\tVoltage: {} V", &values["configured_voltage"].parse::<f32>().unwrap() * 0.001);
+        }
     }
     Ok(())
 }

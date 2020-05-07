@@ -51,7 +51,6 @@ impl Daemon {
                                 let sig = signal
                                     .msg(m.path.get_name(), m.iface.get_name())
                                     .append1(&*name);
-                                println!("Connected!");
                                 Ok(vec![mret, sig])
                             })
                             .outarg::<&str, _>("reply")

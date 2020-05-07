@@ -69,7 +69,7 @@ pub struct MemoryStrings {
     pub speed:              u16,    // 15h
     pub manufacturer:       String, // 17h
     pub serial_number:      String, // 18h
-    pub asset_tag:          String, // 19h
+    //pub asset_tag:          String, // 19h
     pub part_number:        String, // 1Ah
     pub extended_size:      u32,    // 1Ch
     pub configured_speed:   u16,    // 20h
@@ -84,7 +84,7 @@ pub fn create_mem(data: &Structure) -> HashMap<String, String> {
     let mem = MemoryStrings {
         total_width:        u16::from_le_bytes([data.formatted[4], data.formatted[5]]),
         data_width:         u16::from_le_bytes([data.formatted[6], data.formatted[7]]),
-        size:               u16::from_le_bytes([data.formatted[8], data.formatted[9]]),
+        size:               u16::from_le_bytes([data.formatted[8], data.formatted[9]]), // Will need to improve size detection to follow spec
         form_factor:        FORM_FACTORS[data.formatted[10] as usize - 1].to_string(),
         device_set:         data.formatted[11],
         device_locator:     strings.get(0).unwrap().to_owned(),
@@ -94,8 +94,7 @@ pub fn create_mem(data: &Structure) -> HashMap<String, String> {
         speed:              u16::from_le_bytes([data.formatted[17], data.formatted[18]]),
         manufacturer:       strings.get(2).unwrap().to_owned(),
         serial_number:      strings.get(3).unwrap().to_owned(),
-        asset_tag:          strings.get(4).unwrap().to_owned(),
-        part_number:        strings.get(5).unwrap().trim_end().to_string(),
+        part_number:        strings.get(4).unwrap().trim_end().to_string(),
         extended_size:      Cursor::new(data.formatted[24..=27].to_vec()).read_u32::<LittleEndian>().unwrap(),
         configured_speed:   u16::from_le_bytes([data.formatted[28], data.formatted[29]]),
         minimum_voltage:    u16::from_le_bytes([data.formatted[30], data.formatted[31]]),
@@ -107,7 +106,6 @@ pub fn create_mem(data: &Structure) -> HashMap<String, String> {
     (String::from("bank_locator"),       mem.bank_locator),
     (String::from("manufacturer"),       mem.manufacturer),
     (String::from("serial"),             mem.serial_number),
-    (String::from("asset_tag"),          mem.asset_tag),
     (String::from("model"),              mem.part_number),
     (String::from("speed"),              mem.speed.to_string()),
     (String::from("total_width"),        mem.total_width.to_string()),

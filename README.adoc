@@ -1,10 +1,52 @@
-= gpumanagerd
+= hardwaremanagerd
+
+hardwaremanagerd is a dbus service on Linux providing unified hardware information querying, supporting different device classes like CPUs, GPUs, RAM modules, etc. Setting hardware profiles for CPU governer, GPU fan speed, etc, will eventually be added.
 
 == Building
+
+The Rust toolchain should be installed https://www.rust-lang.org/learn/get-started[official site] to ensure the latest stable builds are used:
+
+....
+$ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+$ echo 'source $HOME/.cargo/env' >> ~/.bashrc
+$ source $HOME/.cargo/env 
+....
 
 === Fedora
 
 ....
 $ sudo dnf --assumeyes install gcc dbus-devel systemd-devel
-$ cargo build
+$ cargo build --release
+....
+
+== Examples
+
+....
+$ ./target/release/hardwaremanagerd &
+$ ./target/release/hardwarectl 
+GPU #0
+	Model: Advanced Micro Devices, Inc. [AMD/ATI] Ellesmere [Radeon RX 470/480/570/570X/580/580X/590]
+	Driver: amdgpu
+	PCI ID: 1002:67DF
+CPU #0
+	Frequency: 2.15 GHz
+	Governor:  ondemand
+...
+CPU #11
+	Frequency: 2.19 GHz
+	Governor:  ondemand
+RAM #0
+	<EMPTY>
+RAM #1
+	<EMPTY>
+RAM #2
+	Model:   G-Skill F4-3200C14-8GTZKW
+	Size:    8192 MB
+	Speed:   1866 MT/s
+	Voltage: 1.2 V
+RAM #3
+	Model:   G-Skill F4-3200C14-8GTZKW
+	Size:    8192 MB
+	Speed:   1866 MT/s
+	Voltage: 1.2 V
 ....
