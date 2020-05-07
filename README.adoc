@@ -4,7 +4,7 @@ hardwaremanagerd is a dbus service on Linux providing unified hardware informati
 
 == Building
 
-The Rust toolchain should be installed https://www.rust-lang.org/learn/get-started[official site] to ensure the latest stable builds are used:
+The Rust toolchain should be installed from the https://www.rust-lang.org/learn/get-started[official site] to ensure the latest stable builds are used:
 
 ....
 $ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
