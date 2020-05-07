@@ -13,16 +13,20 @@ A daemon for getting hardware information and setting hardware profiles
 %define _configdir /etc/hardwaremonitord
 
 cargo build --release
+
+mkdir -p %{buildroot}%{_bindir}
 mkdir -p %{buildroot}%{_sbindir}
 mkdir -p %{buildroot}%{_unitdir}
 mkdir -p %{buildroot}%{_configdir}/profiles/pci
 
-install -p -m 755 target/release/hardwaremanagerd                 %{buildroot}%{_sbindir}
-install -p -m 644 runtime/%{_unitdir}/hardwaremanagerd.service    %{buildroot}%{_unitdir}
+install -p -m 755 target/release/hardwarectl                      %{buildroot}%{_bindir}/hardwarectl
+install -p -m 755 target/release/hardwaremanagerd                 %{buildroot}%{_sbindir}/hardwaremanagerd
+install -p -m 644 runtime/%{_unitdir}/hardwaremanagerd.service    %{buildroot}%{_unitdir}/hardwaremanagerd.service
 install -p -m 644 runtime/%{_configdir}/profiles/pci/amdgpu.conf  %{buildroot}%{_configdir}/profiles/pci/amdgpu.conf
 install -p -m 644 runtime/%{_configdir}/profiles/pci/nvidia.conf  %{buildroot}%{_configdir}/profiles/pci/nvidia.conf
 
 %files
+%{_bindir}/hardwarectl
 %{_sbindir}/hardwaremanagerd
 %{_unitdir}/hardwaremanagerd.service
 %{_sysconfdir}/hardwaremonitord/profiles/pci/amdgpu.conf

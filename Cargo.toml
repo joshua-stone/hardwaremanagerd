@@ -1,2 +1,2 @@
 [workspace]
-members = ["hardwaremanagerd"]
+members = ["hardwarectl", "hardwaremanagerd"]

@@ -42,7 +42,7 @@ impl Daemon {
             .tree(())
             .add(
                 f.object_path("/gpu", ()).introspectable().add(
-                    f.interface("org.freedesktop.gpumanager", ())
+                    f.interface("org.freedesktop.HardwareManager", ())
                         .add_m(
                             f.method("ListDevices", (), move |m| {
                                 let name: &str = m.msg.read1()?;
@@ -51,7 +51,7 @@ impl Daemon {
                                 let sig = signal
                                     .msg(m.path.get_name(), m.iface.get_name())
                                     .append1(&*name);
-
+                                println!("Connected!");
                                 Ok(vec![mret, sig])
                             })
                             .outarg::<&str, _>("reply")
@@ -62,7 +62,7 @@ impl Daemon {
             )
             .add(
                 f.object_path("/ram", ()).introspectable().add(
-                    f.interface("org.freedesktop.gpumanager", ())
+                    f.interface("org.freedesktop.HardwareManager", ())
                         .add_m(
                             f.method("ListModules", (), move |m| {
                                 let name: &str = m.msg.read1()?;
@@ -82,7 +82,7 @@ impl Daemon {
             )
             .add(
                 f.object_path("/cpu", ()).introspectable().add(
-                    f.interface("org.freedesktop.gpumanager", ())
+                    f.interface("org.freedesktop.HardwareManager", ())
                         .add_m(
                             f.method("ListFrequencies", (), move |m| {
                                 let name: &str = m.msg.read1()?;
@@ -97,12 +97,29 @@ impl Daemon {
                                 .outarg::<&str, _>("reply")
                                 .inarg::<&str, _>("name"),
                         )
-                        .add_s(signal6),
+                        .add_s(signal6)
+                        .add_m(
+                            f.method("DisableCore", (), move |m| {
+                                let name: &str = m.msg.read1()?;
+                                let mret = m.msg.method_return().append1(true);
+
+                                let sig = signal7
+                                    .msg(m.path.get_name(), m.iface.get_name())
+                                    .append1(&*name);
+
+                                Ok(vec![mret, sig])
+                            })
+                                .outarg::<&str, _>("reply")
+                                .inarg::<&str, _>("name"),
+                        )
+                        .add_s(signal8),
+
                 ),
+
             )
-            .add(
+            /*.add(
                 f.object_path("/cpu", ()).introspectable().add(
-                    f.interface("org.freedesktop.gpumanager", ())
+                    f.interface("org.freedesktop.HardwareManager", ())
                         .add_m(
                             f.method("DisableCore", (), move |m| {
                                 let name: &str = m.msg.read1()?;
@@ -119,7 +136,7 @@ impl Daemon {
                         )
                         .add_s(signal8),
                 ),
-            )
+            )*/
             .add(f.object_path("/", ()).introspectable());
         Daemon {
             name: name.to_string(),

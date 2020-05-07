@@ -1,6 +1,5 @@
 use std::fs::read_to_string;
 use std::collections::HashMap;
-use glob::glob;
 use std::path::PathBuf;
 use std::fs::File;
 use std::io::{Result, Write};
@@ -16,7 +15,23 @@ pub fn write_to_core(core: &PathBuf, value: &str) -> Result<()> {
 }
 
 pub fn detect_core_count() -> Vec<PathBuf>  {
-    glob("/sys/devices/system/cpu/cpu[0-9]*").unwrap().map(|r| r.unwrap()).collect()
+
+
+    let mut paths: Vec<PathBuf> = Vec::new();
+    for core in 0 .. {
+        let mut core_num = String::from("cpu");
+        core_num.push_str(&core.to_string());
+        let mut core_path = PathBuf::from( "/sys/devices/system/cpu");
+        core_path.push(core_num);
+
+        if core_path.exists() {
+            paths.push(core_path);
+        } else {
+            break
+        }
+
+    }
+    paths
 }
 
 impl Cpu {
@@ -58,9 +73,9 @@ pub fn list_core_frequencies(cpu_cores: Vec<PathBuf>) -> Vec<HashMap<String, Str
                     }
                 }
             }
-            cores.push(properties.clone());
-            properties.clear();
         }
+        cores.push(properties.clone());
+        properties.clear();
     }
     cores
 }
